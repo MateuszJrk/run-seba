@@ -4,7 +4,7 @@ import { PaceCalculator } from "@/components/pace-calculator";
 export const metadata: Metadata = {
   title: "Kalkulator tempa",
   description:
-    "Policz pace na km i mile, prognozy na 5 km, 10 km, półmaraton i maraton (formuła Riegela) oraz VDOT (Daniels). Default: PB Seby — HM 1:22:52.",
+    "Policz tempo na km i mile, prognozy na 5 km, 10 km, półmaraton i maraton (formuła Riegela) oraz VDOT (Daniels). Default: PB Seby — HM 1:22:52.",
 };
 
 export default function CalculatorPage() {
@@ -18,8 +18,9 @@ export default function CalculatorPage() {
           Kalkulator tempa
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Wpisz dystans i czas, zobacz pace, predykcje na inne dystanse oraz
-          swoje VDOT. Wszystko liczy się na bieżąco — bez przycisku „Oblicz”.
+          Wyberz dystans i wpisz czas, zobacz tempo, przewidywany czas na inne
+          dystanse oraz swoje VDOT. Wszystko liczy się na bieżąco — bez
+          przycisku „Oblicz”.
         </p>
       </header>
 
