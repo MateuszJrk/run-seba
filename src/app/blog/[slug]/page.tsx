@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -27,6 +28,7 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.date,
       tags: post.tags,
+      images: post.cover ? [{ url: post.cover }] : undefined,
     },
   };
 }
@@ -50,6 +52,18 @@ export default async function PostPage({
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+      {post.cover ? (
+        <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-2xl border border-border">
+          <Image
+            src={post.cover}
+            alt={post.title}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-cover"
+          />
+        </div>
+      ) : null}
       <header className="mb-10 border-b border-border pb-8">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <time dateTime={post.date}>

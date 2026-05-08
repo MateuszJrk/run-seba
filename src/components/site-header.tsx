@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 
 const NAV = [
   { href: "/", label: "Blog" },
@@ -12,12 +13,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-        <Link
-          href="/"
-          className="font-heading text-lg font-bold tracking-tight"
-        >
-          run-seba<span className="text-muted-foreground">.pl</span>
-        </Link>
+        <Logo />
         <nav className="flex items-center gap-1 sm:gap-3">
           <ul className="hidden items-center gap-1 text-sm font-medium sm:flex">
             {NAV.map((item) => (
