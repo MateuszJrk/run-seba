@@ -187,6 +187,36 @@ export async function getPostsByTag(tag: string): Promise<PostMeta[]> {
   return posts.filter((p) => p.tags.includes(tag));
 }
 
+export type PostsPage = {
+  posts: PostMeta[];
+  page: number;
+  totalPages: number;
+  totalPosts: number;
+  perPage: number;
+};
+
+export const POSTS_PER_PAGE = 6;
+
+export async function getPostsPaginated(
+  page: number,
+  perPage: number = POSTS_PER_PAGE,
+): Promise<PostsPage> {
+  const all = await getAllPosts();
+  const totalPosts = all.length;
+  const totalPages = Math.max(1, Math.ceil(totalPosts / perPage));
+  const safePage = Math.max(1, Math.min(page, totalPages));
+  const start = (safePage - 1) * perPage;
+  const posts = all.slice(start, start + perPage);
+  return { posts, page: safePage, totalPages, totalPosts, perPage };
+}
+
+export async function getTotalPostsPages(
+  perPage: number = POSTS_PER_PAGE,
+): Promise<number> {
+  const all = await getAllPosts();
+  return Math.max(1, Math.ceil(all.length / perPage));
+}
+
 export async function getRelatedPosts(
   slug: string,
   limit = 3,

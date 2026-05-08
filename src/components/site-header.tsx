@@ -4,7 +4,7 @@ import { NavLink } from "@/components/nav-link";
 import { MobileMenu } from "@/components/mobile-menu";
 
 const NAV = [
-  { href: "/", label: "Blog" },
+  { href: "/blog", label: "Blog" },
   { href: "/tagi", label: "Tagi" },
   { href: "/kalkulator", label: "Tempo" },
   { href: "/o-mnie", label: "O mnie" },

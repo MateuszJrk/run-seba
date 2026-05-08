@@ -1,17 +1,33 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts, getAllTags } from "@/lib/posts";
+import {
+  getAllPosts,
+  getAllTags,
+  getTotalPostsPages,
+} from "@/lib/posts";
 import { fetchRecentRuns } from "@/lib/strava";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://run-seba.pl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, tags, runs] = await Promise.all([
+  const [posts, tags, runs, totalBlogPages] = await Promise.all([
     getAllPosts(),
     getAllTags(),
     fetchRecentRuns(20).then((r) => r.activities),
+    getTotalPostsPages(),
   ]);
   const now = new Date();
+
+  const blogPages: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: "weekly" },
+  ];
+  for (let i = 2; i <= totalBlogPages; i++) {
+    blogPages.push({
+      url: `${SITE_URL}/blog/page/${i}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+    });
+  }
 
   return [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
@@ -19,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/kontakt`, lastModified: now },
     { url: `${SITE_URL}/kalkulator`, lastModified: now },
     { url: `${SITE_URL}/tagi`, lastModified: now },
+    ...blogPages,
     ...posts.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
       lastModified: new Date(post.date),
