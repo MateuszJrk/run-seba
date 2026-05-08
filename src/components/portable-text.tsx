@@ -3,10 +3,10 @@ import {
   type PortableTextComponents,
   type PortableTextBlock,
 } from "next-sanity";
-import Image from "next/image";
 import Link from "next/link";
 import { urlForImage } from "@/sanity/lib/image";
 import type { SanityImage } from "@/sanity/lib/types";
+import { LightboxImage } from "@/components/lightbox-image";
 
 const components: PortableTextComponents = {
   types: {
@@ -19,7 +19,7 @@ const components: PortableTextComponents = {
 
       return (
         <figure className="my-8">
-          <Image
+          <LightboxImage
             src={url}
             alt={value.alt ?? ""}
             width={width}
@@ -28,6 +28,7 @@ const components: PortableTextComponents = {
             placeholder={value.asset.metadata?.lqip ? "blur" : undefined}
             blurDataURL={value.asset.metadata?.lqip}
             className="rounded-lg"
+            caption={value.caption}
           />
           {value.caption ? (
             <figcaption className="mt-2 text-center text-sm text-muted-foreground">

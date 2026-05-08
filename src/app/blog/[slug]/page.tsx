@@ -2,8 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getAllSlugs, getPostFull, getPostMeta } from "@/lib/posts";
+import {
+  getAllSlugs,
+  getPostFull,
+  getPostMeta,
+  getRelatedPosts,
+} from "@/lib/posts";
 import { PortableTextBody } from "@/components/portable-text";
+import { ReadingProgress } from "@/components/reading-progress";
+import { RelatedPosts } from "@/components/related-posts";
 
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -47,11 +54,16 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostFull(slug);
+  const [post, related] = await Promise.all([
+    getPostFull(slug),
+    getRelatedPosts(slug),
+  ]);
   if (!post) notFound();
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+    <>
+      <ReadingProgress />
+      <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
       {post.cover ? (
         <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-2xl border border-border">
           <Image
@@ -107,6 +119,8 @@ export default async function PostPage({
         )}
       </div>
 
+      <RelatedPosts posts={related} />
+
       <footer className="mt-16 border-t border-border pt-8">
         <Link
           href="/"
@@ -115,7 +129,8 @@ export default async function PostPage({
           ← Wszystkie wpisy
         </Link>
       </footer>
-    </article>
+      </article>
+    </>
   );
 }
 

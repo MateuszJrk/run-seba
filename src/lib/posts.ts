@@ -186,3 +186,26 @@ export async function getPostsByTag(tag: string): Promise<PostMeta[]> {
   const posts = await getAllPosts();
   return posts.filter((p) => p.tags.includes(tag));
 }
+
+export async function getRelatedPosts(
+  slug: string,
+  limit = 3,
+): Promise<PostMeta[]> {
+  const all = await getAllPosts();
+  const current = all.find((p) => p.slug === slug);
+  if (!current || current.tags.length === 0) return [];
+
+  const candidates = all
+    .filter((p) => p.slug !== slug)
+    .map((p) => ({
+      post: p,
+      score: p.tags.filter((t) => current.tags.includes(t)).length,
+    }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.post.date < b.post.date ? 1 : -1;
+    });
+
+  return candidates.slice(0, limit).map(({ post }) => post);
+}
