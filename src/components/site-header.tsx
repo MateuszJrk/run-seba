@@ -17,7 +17,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <Logo />
         <nav className="flex items-center gap-1 sm:gap-3">
-          <ul className="hidden items-center gap-1 text-sm font-medium sm:flex">
+          <ul className="relative hidden items-center gap-1 text-sm font-medium sm:flex">
             {NAV.map((item) => (
               <li key={item.href}>
                 <NavLink href={item.href} label={item.label} />
