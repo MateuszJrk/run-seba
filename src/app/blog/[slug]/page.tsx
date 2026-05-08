@@ -1,0 +1,99 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { getAllSlugs, getPostMeta } from "@/lib/posts";
+
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const slugs = await getAllSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPostMeta(slug);
+  if (!post) return {};
+  return {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      type: "article",
+      publishedTime: post.date,
+      tags: post.tags,
+    },
+  };
+}
+
+const DATE_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+export default async function PostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const post = await getPostMeta(slug);
+  if (!post) notFound();
+
+  const { default: Post } = await import(`@/../content/posts/${slug}.mdx`);
+
+  return (
+    <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+      <header className="mb-10 border-b border-border pb-8">
+        <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <time dateTime={post.date}>
+            {DATE_FORMATTER.format(new Date(post.date))}
+          </time>
+          <span aria-hidden>·</span>
+          <span>{post.readingTimeMin} min czytania</span>
+        </div>
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          {post.title}
+        </h1>
+        {post.description ? (
+          <p className="mt-4 text-lg text-muted-foreground">
+            {post.description}
+          </p>
+        ) : null}
+        {post.tags?.length ? (
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <li key={tag}>
+                <Link
+                  href={`/tagi/${tag}`}
+                  className="inline-block rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-foreground hover:text-background"
+                >
+                  #{tag}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </header>
+
+      <div className="prose-running">
+        <Post />
+      </div>
+
+      <footer className="mt-16 border-t border-border pt-8">
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← Wszystkie wpisy
+        </Link>
+      </footer>
+    </article>
+  );
+}
