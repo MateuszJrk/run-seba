@@ -65,7 +65,7 @@ export function PBGrid({ items }: { items: PB[] }) {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {pb.distance}
           </p>
-          <p className="mt-1 font-mono text-2xl font-semibold tabular-nums">
+          <p className="mt-1 font-mono text-2xl font-semibold tabular-nums text-running">
             <AnimatedTime time={pb.time} play={inView} />
           </p>
           {pb.year ? (

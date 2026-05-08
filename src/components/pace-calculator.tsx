@@ -130,8 +130,8 @@ export function PaceCalculator() {
                   aria-pressed={active}
                   className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                     active
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-card hover:border-foreground/20"
+                      ? "border-running bg-running text-running-foreground"
+                      : "border-border bg-card hover:border-running/40"
                   }`}
                 >
                   {d.label}
