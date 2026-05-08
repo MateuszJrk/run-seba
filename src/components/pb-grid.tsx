@@ -9,6 +9,7 @@ import {
   type Variants,
 } from "motion/react";
 import { useEffect, useRef } from "react";
+import { formatSecondsAsTime, parseTimeToSeconds } from "@/lib/time";
 
 export type PB = {
   distance: string;
@@ -16,37 +17,10 @@ export type PB = {
   year?: string;
 };
 
-function timeToSeconds(time: string): { seconds: number; hasHours: boolean } {
-  const parts = time.split(":").map(Number);
-  if (parts.length === 3) {
-    return {
-      seconds: parts[0] * 3600 + parts[1] * 60 + parts[2],
-      hasHours: true,
-    };
-  }
-  if (parts.length === 2) {
-    return { seconds: parts[0] * 60 + parts[1], hasHours: false };
-  }
-  return { seconds: parts[0] ?? 0, hasHours: false };
-}
-
-function secondsToTime(seconds: number, hasHours: boolean): string {
-  const total = Math.max(0, Math.floor(seconds));
-  if (hasHours) {
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  }
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
 function AnimatedTime({ time, play }: { time: string; play: boolean }) {
-  const { seconds, hasHours } = timeToSeconds(time);
+  const { seconds, hasHours } = parseTimeToSeconds(time);
   const value = useMotionValue(0);
-  const display = useTransform(value, (v) => secondsToTime(v, hasHours));
+  const display = useTransform(value, (v) => formatSecondsAsTime(v, hasHours));
 
   useEffect(() => {
     if (!play) return;
