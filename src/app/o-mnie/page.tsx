@@ -58,8 +58,7 @@ export default function AboutPage() {
         <p>
           Cześć, jestem Seba. Biegam, bo to najprostszy sposób, żeby uciec od
           ekranu i wrócić do siebie. Tu zapisuję, co mi z tego biegania
-          wychodzi — relacje z tras, treningi, które zadziałały (i te, które
-          mnie złamały), oraz przemyślenia o sprzęcie.
+          wychodzi — relacje z tras, treningi i przemyślenia o sprzęcie.
         </p>
 
         <h2>Klub i współprace</h2>
