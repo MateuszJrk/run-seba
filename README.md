@@ -64,10 +64,75 @@ src/
   mdx-components.tsx   globalne komponenty MDX (img → next/image, a → next/link)
 ```
 
-## Następne kroki (po MVP)
+## Sanity (CMS dla kolegi)
 
-- Migracja treści do Sanity (CMS dla nietechnicznego autora).
-- Embed Instagrama przez LightWidget.
+Studio osadzone pod `/studio` na tej samej domenie (np. `https://run-seba.pl/studio`). Kolega wchodzi w przeglądarce, loguje się kontem Sanity (Google/GitHub) i pisze posty w edytorze block-content (jak Notion).
+
+### Lokalnie
+
+1. `.env.local` musi mieć:
+   ```
+   NEXT_PUBLIC_SANITY_PROJECT_ID=cr63utxk
+   NEXT_PUBLIC_SANITY_DATASET=production
+   SANITY_REVALIDATE_SECRET=<wygenerowany sekret>
+   ```
+2. `npm run dev` → otwórz `http://localhost:3000/studio`.
+
+### Vercel — zmienne środowiskowe (Production + Preview)
+
+W Vercel → Settings → Environment Variables dodaj:
+- `NEXT_PUBLIC_SITE_URL` = `https://run-seba.pl`
+- `NEXT_PUBLIC_SANITY_PROJECT_ID` = `cr63utxk`
+- `NEXT_PUBLIC_SANITY_DATASET` = `production`
+- `NEXT_PUBLIC_SANITY_API_VERSION` = `2026-05-08`
+- `SANITY_REVALIDATE_SECRET` = ten sam sekret co lokalnie
+
+Po zapisie → Deployments → Redeploy.
+
+### Webhook do natychmiastowej rewalidacji
+
+Bez webhooka strona odświeża treści Sanity co 60 sekund (revalidate). Z webhookiem — natychmiast po publikacji.
+
+W Sanity (`https://www.sanity.io/manage/personal/project/cr63utxk/api/webhooks`):
+1. **Create webhook**
+2. Name: `Vercel revalidate`
+3. URL: `https://run-seba.pl/api/revalidate`
+4. Dataset: `production`
+5. Trigger on: Create, Update, Delete
+6. Filter: `_type == "post"`
+7. Projection:
+   ```
+   { _type, "slug": slug.current }
+   ```
+8. HTTP method: `POST`
+9. HTTP Headers: zostaw default
+10. **Secret**: ten sam co `SANITY_REVALIDATE_SECRET` w Vercel
+11. Save
+
+Każda publikacja postu w Studio wywoła revalidate `/`, `/blog/[slug]`, `/tagi`, `/tagi/[tag]`.
+
+## Pisanie postów w MDX (alternatywa dla Sanity)
+
+Dla custom contentu z osadzonymi komponentami React (np. interaktywny kalkulator tempa) możesz dalej pisać w MDX. Plik `.mdx` w `content/posts/`, slug = nazwa pliku.
+
+```mdx
+---
+title: "Tytuł wpisu"
+description: "Krótki opis (1-2 zdania)."
+date: "2026-05-08"
+tags: ["maraton", "buty"]
+cover: "/posts/{slug}.jpg"
+---
+
+Treść markdownem. Zdjęcia wrzucaj do `public/posts/`.
+```
+
+`getAllPosts()` ciągnie z obu źródeł i łączy po dacie.
+
+## Następne kroki
+
+- Embed Instagrama (`@run_seba`) przez LightWidget.
 - Kalkulator tempa / VDOT.
 - Newsletter (MailerLite/Buttondown).
-- Integracja ze Stravą.
+- Integracja ze Stravą (ostatnie aktywności).
+- Strona `/trasy` z mapami tras.

@@ -2,13 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getAllSlugs, getPostMeta } from "@/lib/posts";
+import { getAllSlugs, getPostFull, getPostMeta } from "@/lib/posts";
+import { PortableTextBody } from "@/components/portable-text";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const slugs = await getAllSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return slugs.map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -45,10 +47,8 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostMeta(slug);
+  const post = await getPostFull(slug);
   if (!post) notFound();
-
-  const { default: Post } = await import(`@/../content/posts/${slug}.mdx`);
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
@@ -56,14 +56,17 @@ export default async function PostPage({
         <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-2xl border border-border">
           <Image
             src={post.cover}
-            alt={post.title}
+            alt={post.coverAlt ?? post.title}
             fill
             priority
             sizes="(max-width: 768px) 100vw, 768px"
+            placeholder={post.coverLqip ? "blur" : undefined}
+            blurDataURL={post.coverLqip}
             className="object-cover"
           />
         </div>
       ) : null}
+
       <header className="mb-10 border-b border-border pb-8">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <time dateTime={post.date}>
@@ -97,7 +100,11 @@ export default async function PostPage({
       </header>
 
       <div className="prose-running">
-        <Post />
+        {post.source === "mdx" ? (
+          <MdxBody slug={slug} />
+        ) : (
+          <PortableTextBody value={post.body} />
+        )}
       </div>
 
       <footer className="mt-16 border-t border-border pt-8">
@@ -110,4 +117,9 @@ export default async function PostPage({
       </footer>
     </article>
   );
+}
+
+async function MdxBody({ slug }: { slug: string }) {
+  const { default: Post } = await import(`@/../content/posts/${slug}.mdx`);
+  return <Post />;
 }
