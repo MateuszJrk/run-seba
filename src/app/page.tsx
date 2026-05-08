@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import { fetchYearStats } from "@/lib/strava";
 import { PostsList } from "@/components/posts-list";
 import { Hero } from "@/components/hero";
 import { StravaFeed } from "@/components/strava-feed";
 import { YearStatsBlock } from "@/components/year-stats";
+import { TagCloud } from "@/components/tag-cloud";
 
 export const revalidate = 60;
 
@@ -24,21 +24,7 @@ export default async function HomePage() {
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               Tagi
             </h2>
-            <ul className="flex flex-wrap gap-2">
-              {tags.map(({ tag, count }) => (
-                <li key={tag}>
-                  <Link
-                    href={`/tagi/${tag}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm transition-colors hover:border-foreground/20"
-                  >
-                    #{tag}
-                    <span className="text-xs text-muted-foreground">
-                      {count}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <TagCloud tags={tags} />
           </section>
         ) : null}
 
