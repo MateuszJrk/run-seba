@@ -60,3 +60,76 @@ export function speedKmh(distanceM: number, timeSec: number): number {
   if (timeSec <= 0) return 0;
   return distanceM / 1000 / (timeSec / 3600);
 }
+
+// ---------- Daniels VDOT training paces ----------
+
+export type IntensityZone = "E" | "M" | "T" | "I" | "R";
+
+export const ZONE_DEFINITIONS: Record<
+  IntensityZone,
+  {
+    name: string;
+    description: string;
+    purpose: string;
+    /** % of vVO2max — Daniels canonical ranges */
+    percentVO2max: [number, number];
+  }
+> = {
+  E: {
+    name: "Easy",
+    description: "Spokojny rozbieg / regeneracja",
+    purpose: "Aerobic base, regeneracja, wytrzymałość",
+    percentVO2max: [0.59, 0.74],
+  },
+  M: {
+    name: "Marathon",
+    description: "Tempo maratońskie",
+    purpose: "Specyficzny trening pod maraton",
+    percentVO2max: [0.75, 0.84],
+  },
+  T: {
+    name: "Threshold",
+    description: "Tempo progowe (LT)",
+    purpose: "Próg mleczanowy, comfortable hard 20-40 min",
+    percentVO2max: [0.86, 0.88],
+  },
+  I: {
+    name: "Intervals",
+    description: "Interwały VO2max",
+    purpose: "Wzmocnienie VO2max, 3-5 min powtórzenia",
+    percentVO2max: [0.95, 1.0],
+  },
+  R: {
+    name: "Repetition",
+    description: "Powtórzenia szybkościowe",
+    purpose: "Ekonomia biegu, 200-600m",
+    percentVO2max: [1.05, 1.1],
+  },
+};
+
+/**
+ * vVO2max — velocity at VO2max in m/min, na bazie VDOT (Daniels formula).
+ */
+export function vVO2max(vdot: number): number {
+  return 29.54 + 5.000663 * vdot - 0.007546 * vdot * vdot;
+}
+
+/**
+ * Tempo (sec/km) dla wybranej strefy treningowej i danego VDOT.
+ * Zwraca zakres [faster, slower].
+ */
+export function paceForZone(
+  vdot: number,
+  zone: IntensityZone,
+): { fasterSec: number; slowerSec: number } {
+  if (vdot <= 0) return { fasterSec: 0, slowerSec: 0 };
+  const v = vVO2max(vdot); // m/min
+  const [pMin, pMax] = ZONE_DEFINITIONS[zone].percentVO2max;
+  // velocity = v × percentage (m/min); pace (sec/km) = 60 × 1000 / velocity
+  const fasterVelocity = v * pMax;
+  const slowerVelocity = v * pMin;
+  return {
+    fasterSec: 60_000 / fasterVelocity,
+    slowerSec: 60_000 / slowerVelocity,
+  };
+}

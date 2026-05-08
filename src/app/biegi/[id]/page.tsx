@@ -7,6 +7,7 @@ import { RouteMap } from "@/components/route-map";
 import { ElevationProfile } from "@/components/elevation-profile";
 import { SplitsTable } from "@/components/splits-table";
 import { StatCard } from "@/components/stat-card";
+import { WeatherWidget } from "@/components/weather-widget";
 
 export const dynamicParams = true;
 export const revalidate = 1800; // 30 min
@@ -93,6 +94,7 @@ export default async function ActivityPage({
 
       <RouteMap
         coordinates={activity.coordinates}
+        velocityStream={activity.velocityStream}
         className="aspect-[16/9] w-full sm:aspect-[2/1]"
       />
 
@@ -185,11 +187,20 @@ export default async function ActivityPage({
         ) : null}
       </section>
 
-      {activity.description ? (
-        <section className="mt-8 rounded-xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
-          {activity.description}
-        </section>
-      ) : null}
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <WeatherWidget
+          coordinates={activity.coordinates}
+          isoDateTime={activity.startDate}
+        />
+        {activity.description ? (
+          <section className="rounded-xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Notatka
+            </p>
+            {activity.description}
+          </section>
+        ) : null}
+      </div>
 
       <section className="mt-12">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">

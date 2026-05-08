@@ -37,6 +37,8 @@ export type StravaActivityFull = StravaActivity & {
   description?: string;
   elevation: ElevationPoint[];
   splits: SplitKm[];
+  /** Speed in m/s, jeden punkt per coordinate */
+  velocityStream?: number[];
   kudosCount?: number;
   prCount?: number;
 };
@@ -180,7 +182,7 @@ export async function fetchActivityById(
         },
       ),
       fetch(
-        `https://www.strava.com/api/v3/activities/${numericId}/streams?keys=distance,altitude,heartrate&key_by_type=true`,
+        `https://www.strava.com/api/v3/activities/${numericId}/streams?keys=distance,altitude,heartrate,velocity_smooth&key_by_type=true`,
         {
           headers: { Authorization: `Bearer ${token}` },
           next: { revalidate: 1800 },
@@ -215,6 +217,7 @@ export async function fetchActivityById(
       distance?: { data: number[] };
       altitude?: { data: number[] };
       heartrate?: { data: number[] };
+      velocity_smooth?: { data: number[] };
     };
     const streams: Streams = streamsRes.ok ? await streamsRes.json() : {};
 
@@ -225,6 +228,8 @@ export async function fetchActivityById(
             altitude: streams.altitude!.data[i],
           }))
         : [];
+
+    const velocityStream = streams.velocity_smooth?.data;
 
     const splits: SplitKm[] =
       apiActivity.splits_metric?.map((s) => ({
@@ -247,6 +252,7 @@ export async function fetchActivityById(
         prCount: apiActivity.pr_count,
         elevation,
         splits,
+        velocityStream,
       },
       isMock: false,
     };
@@ -308,6 +314,22 @@ function generateMockSplits(
   return splits;
 }
 
+function generateMockVelocity(
+  pointCount: number,
+  averageSpeed: number,
+): number[] {
+  // Simulate negative split with noise: drugie połowa nieco szybsza, lekkie wahania
+  return Array.from({ length: pointCount }, (_, i) => {
+    const t = i / Math.max(pointCount - 1, 1);
+    const trend = (t - 0.5) * 0.15; // ±7.5% trend (faster at end)
+    const noise =
+      Math.sin(i * 0.7) * 0.08 +
+      Math.sin(i * 0.23) * 0.06 +
+      Math.cos(i * 1.1) * 0.04;
+    return averageSpeed * (1 + trend + noise);
+  });
+}
+
 function enrichWithMockDetails(base: StravaActivity): StravaActivityFull {
   return {
     ...base,
@@ -325,6 +347,10 @@ function enrichWithMockDetails(base: StravaActivity): StravaActivityFull {
       base.totalElevationGain,
     ),
     splits: generateMockSplits(base.distance, base.movingTime),
+    velocityStream: generateMockVelocity(
+      base.coordinates.length,
+      base.averageSpeed,
+    ),
   };
 }
 

@@ -6,10 +6,13 @@ import {
   calculateVdot,
   pacePerKm,
   pacePerMile,
+  paceForZone,
   predictRaceTime,
   speedKmh,
   STANDARD_DISTANCES,
+  ZONE_DEFINITIONS,
   type DistanceKey,
+  type IntensityZone,
 } from "@/lib/running";
 import { formatPace, formatRaceTime } from "@/lib/time";
 
@@ -230,7 +233,7 @@ export function PaceCalculator() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <div className="flex items-end justify-between rounded-xl border border-border bg-card p-5">
+          <div className="flex items-end justify-between rounded-xl border border-running/40 bg-running-soft p-5">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 VDOT
@@ -239,12 +242,82 @@ export function PaceCalculator() {
                 Wskaźnik wytrzymałości tlenowej wg Jacka Danielsa.
               </p>
             </div>
-            <p className="font-mono text-4xl font-bold tabular-nums">
+            <p className="font-mono text-4xl font-bold tabular-nums text-running">
               {vdot.toFixed(1)}
             </p>
           </div>
         </motion.div>
+
+        {validInput && vdot > 0 ? (
+          <motion.div variants={itemVariants}>
+            <TrainingPaces vdot={vdot} />
+          </motion.div>
+        ) : null}
       </motion.div>
+    </div>
+  );
+}
+
+const ZONE_ORDER: IntensityZone[] = ["E", "M", "T", "I", "R"];
+
+function TrainingPaces({ vdot }: { vdot: number }) {
+  return (
+    <div>
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        Tempo treningowe (Daniels)
+      </h2>
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50">
+            <tr className="text-xs uppercase tracking-wider text-muted-foreground">
+              <th className="w-10 px-3 py-2 text-left font-medium">Strefa</th>
+              <th className="px-3 py-2 text-left font-medium">Opis</th>
+              <th className="w-32 px-3 py-2 text-right font-medium">
+                Tempo (min/km)
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {ZONE_ORDER.map((zone) => {
+              const def = ZONE_DEFINITIONS[zone];
+              const { fasterSec, slowerSec } = paceForZone(vdot, zone);
+              return (
+                <tr
+                  key={zone}
+                  className="border-t border-border/60 transition-colors hover:bg-muted/30"
+                >
+                  <td className="px-3 py-2.5 align-top">
+                    <span className="inline-flex size-7 items-center justify-center rounded-full bg-running-soft font-mono text-xs font-bold text-running">
+                      {zone}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2.5 align-top">
+                    <p className="font-medium">{def.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {def.purpose}
+                    </p>
+                  </td>
+                  <td className="px-3 py-2.5 text-right align-top font-mono tabular-nums">
+                    <span className="text-foreground">
+                      {formatPace(fasterSec)}
+                    </span>
+                    <span className="text-muted-foreground"> – </span>
+                    <span className="text-foreground">
+                      {formatPace(slowerSec)}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Tempa wyliczane wg formuły Jacka Danielsa (Daniels' Running Formula)
+        z aktualnego VDOT. Strefy: <strong>E</strong> Easy,{" "}
+        <strong>M</strong> Marathon, <strong>T</strong> Threshold (LT),{" "}
+        <strong>I</strong> Intervals (VO2max), <strong>R</strong> Repetition.
+      </p>
     </div>
   );
 }

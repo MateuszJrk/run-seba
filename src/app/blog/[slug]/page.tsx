@@ -12,6 +12,10 @@ import { PortableTextBody } from "@/components/portable-text";
 import { ReadingProgress } from "@/components/reading-progress";
 import { RelatedPosts } from "@/components/related-posts";
 import { ArticleJsonLd } from "@/components/article-json-ld";
+import { ShareButtons } from "@/components/share-buttons";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://run-seba.pl";
 
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -121,6 +125,11 @@ export default async function PostPage({
       </div>
 
       <ArticleJsonLd post={post} />
+
+      <ShareButtons
+        url={`${SITE_URL}/blog/${slug}`}
+        title={post.title}
+      />
 
       <RelatedPosts posts={related} />
 
