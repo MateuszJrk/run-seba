@@ -3,7 +3,7 @@ import { getAllPosts, getAllTags } from "@/lib/posts";
 import { PostsList } from "@/components/posts-list";
 import { Hero } from "@/components/hero";
 
-export const dynamic = "force-static";
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [posts, tags] = await Promise.all([getAllPosts(), getAllTags()]);

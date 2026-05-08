@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllTags, getPostsByTag } from "@/lib/posts";
-import { PostCard } from "@/components/post-card";
+import { PostsList } from "@/components/posts-list";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const tags = await getAllTags();
@@ -43,13 +44,7 @@ export default async function TagPage({
         </p>
       </header>
 
-      <ul className="grid gap-6 sm:grid-cols-2">
-        {posts.map((post) => (
-          <li key={post.slug}>
-            <PostCard post={post} />
-          </li>
-        ))}
-      </ul>
+      <PostsList posts={posts} />
 
       <div className="mt-12">
         <Link

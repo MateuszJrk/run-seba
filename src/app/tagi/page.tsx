@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getAllTags } from "@/lib/posts";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Tagi",
   description: "Wszystkie tagi na blogu run-seba.pl.",
