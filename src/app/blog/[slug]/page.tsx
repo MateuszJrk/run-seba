@@ -11,7 +11,7 @@ import {
 import { PortableTextBody } from "@/components/portable-text";
 import { ReadingProgress } from "@/components/reading-progress";
 import { RelatedPosts } from "@/components/related-posts";
-import { AuthorBio } from "@/components/author-bio";
+import { ArticleJsonLd } from "@/components/article-json-ld";
 
 export const dynamicParams = true;
 export const revalidate = 60;
@@ -120,7 +120,7 @@ export default async function PostPage({
         )}
       </div>
 
-      <AuthorBio />
+      <ArticleJsonLd post={post} />
 
       <RelatedPosts posts={related} />
 

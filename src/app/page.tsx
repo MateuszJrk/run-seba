@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAllPosts, getAllTags } from "@/lib/posts";
 import { PostsList } from "@/components/posts-list";
 import { Hero } from "@/components/hero";
+import { StravaFeed } from "@/components/strava-feed";
 
 export const revalidate = 60;
 
@@ -41,6 +42,8 @@ export default async function HomePage() {
           </h2>
           <PostsList posts={posts} />
         </section>
+
+        <StravaFeed />
       </div>
     </>
   );

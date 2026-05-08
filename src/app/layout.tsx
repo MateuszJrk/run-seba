@@ -30,6 +30,9 @@ export const metadata: Metadata = {
   },
   description:
     "Blog Seby o bieganiu: relacje z tras, treningi, sprzęt i maraton w praktyce.",
+  authors: [{ name: "Seba", url: `${SITE_URL}/o-mnie` }],
+  creator: "Seba",
+  publisher: "run-seba.pl",
   openGraph: {
     type: "website",
     locale: "pl_PL",
