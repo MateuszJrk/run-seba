@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
+import { NavLink } from "@/components/nav-link";
 
 const NAV = [
   { href: "/", label: "Blog" },
@@ -19,12 +19,7 @@ export function SiteHeader() {
           <ul className="hidden items-center gap-1 text-sm font-medium sm:flex">
             {NAV.map((item) => (
               <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {item.label}
-                </Link>
+                <NavLink href={item.href} label={item.label} />
               </li>
             ))}
           </ul>
