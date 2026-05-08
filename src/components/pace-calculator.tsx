@@ -14,7 +14,40 @@ import {
 import { formatPace, formatRaceTime } from "@/lib/time";
 
 const DEFAULT_DISTANCE: DistanceKey = "hm";
-const DEFAULTS = { hours: 1, minutes: 22, seconds: 52 } as const;
+
+type SebaTime = {
+  hours: number;
+  minutes: number;
+  seconds: number;
+  hint: string;
+};
+
+const SEBA_PBS: Record<DistanceKey, SebaTime> = {
+  "5k": {
+    hours: 0,
+    minutes: 17,
+    seconds: 39,
+    hint: "PB Seby na 5 km: 17:39 (2022).",
+  },
+  "10k": {
+    hours: 0,
+    minutes: 36,
+    seconds: 59,
+    hint: "PB Seby na 10 km: 36:59 (2022).",
+  },
+  hm: {
+    hours: 1,
+    minutes: 22,
+    seconds: 52,
+    hint: "PB Seby na półmaratonie: 1:22:52 (2020).",
+  },
+  marathon: {
+    hours: 2,
+    minutes: 52,
+    seconds: 46,
+    hint: "Seba nie ma jeszcze PB w maratonie — wstawiony szacunek z PB w HM (Riegel).",
+  },
+};
 
 const containerVariants: Variants = {
   hidden: {},
@@ -35,9 +68,23 @@ function clampInt(value: string, max: number): number {
 export function PaceCalculator() {
   const [distanceKey, setDistanceKey] =
     useState<DistanceKey>(DEFAULT_DISTANCE);
-  const [hours, setHours] = useState<number>(DEFAULTS.hours);
-  const [minutes, setMinutes] = useState<number>(DEFAULTS.minutes);
-  const [seconds, setSeconds] = useState<number>(DEFAULTS.seconds);
+  const [hours, setHours] = useState<number>(
+    SEBA_PBS[DEFAULT_DISTANCE].hours,
+  );
+  const [minutes, setMinutes] = useState<number>(
+    SEBA_PBS[DEFAULT_DISTANCE].minutes,
+  );
+  const [seconds, setSeconds] = useState<number>(
+    SEBA_PBS[DEFAULT_DISTANCE].seconds,
+  );
+
+  function handleDistanceChange(key: DistanceKey) {
+    setDistanceKey(key);
+    const pb = SEBA_PBS[key];
+    setHours(pb.hours);
+    setMinutes(pb.minutes);
+    setSeconds(pb.seconds);
+  }
 
   const distance = useMemo(
     () =>
@@ -79,7 +126,7 @@ export function PaceCalculator() {
                 <button
                   key={d.key}
                   type="button"
-                  onClick={() => setDistanceKey(d.key)}
+                  onClick={() => handleDistanceChange(d.key)}
                   aria-pressed={active}
                   className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                     active
@@ -121,8 +168,8 @@ export function PaceCalculator() {
         </fieldset>
 
         <p className="text-xs text-muted-foreground">
-          Domyślnie wpisany jest PB Seby na półmaratonie (1:22:52). Zmień
-          wartości, aby przeliczyć dla siebie.
+          {SEBA_PBS[distanceKey].hint} Zmień wartości, aby przeliczyć dla
+          siebie.
         </p>
       </form>
 
