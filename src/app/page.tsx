@@ -1,18 +1,16 @@
 import Link from "next/link";
-import { getAllTags, getPostsPaginated } from "@/lib/posts";
+import { getPostsPaginated } from "@/lib/posts";
 import { fetchYearStats } from "@/lib/strava";
 import { PostsList } from "@/components/posts-list";
 import { Hero } from "@/components/hero";
 import { StravaFeed } from "@/components/strava-feed";
 import { YearStatsBlock } from "@/components/year-stats";
-import { TagCloud } from "@/components/tag-cloud";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [postsPage, tags, yearStats] = await Promise.all([
+  const [postsPage, yearStats] = await Promise.all([
     getPostsPaginated(1, 4),
-    getAllTags(),
     fetchYearStats(),
   ]);
   const posts = postsPage.posts;
@@ -22,15 +20,6 @@ export default async function HomePage() {
     <>
       <Hero />
       <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-20">
-        {tags.length > 0 ? (
-          <section className="mb-10">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Tagi
-            </h2>
-            <TagCloud tags={tags} />
-          </section>
-        ) : null}
-
         <section>
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
