@@ -100,6 +100,68 @@ export const postType = defineType({
             defineField({ name: "caption", title: "Podpis", type: "string" }),
           ],
         },
+        {
+          type: "object",
+          name: "gallery",
+          title: "Galeria zdjęć",
+          fields: [
+            defineField({
+              name: "images",
+              title: "Zdjęcia",
+              type: "array",
+              of: [
+                {
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [
+                    defineField({
+                      name: "alt",
+                      title: "Alt text",
+                      type: "string",
+                    }),
+                    defineField({
+                      name: "caption",
+                      title: "Podpis",
+                      type: "string",
+                    }),
+                  ],
+                },
+              ],
+              validation: (rule) => rule.min(2).max(24),
+              options: { layout: "grid" },
+            }),
+            defineField({
+              name: "layout",
+              title: "Układ",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Grid 2 kolumny", value: "grid-2" },
+                  { title: "Grid 3 kolumny", value: "grid-3" },
+                  { title: "Mozaika (różne rozmiary)", value: "mosaic" },
+                ],
+                layout: "radio",
+              },
+              initialValue: "grid-2",
+            }),
+          ],
+          preview: {
+            select: {
+              images: "images",
+              layout: "layout",
+            },
+            prepare({ images, layout }) {
+              const count = Array.isArray(images) ? images.length : 0;
+              const noun =
+                count === 1 ? "zdjęcie" : count < 5 ? "zdjęcia" : "zdjęć";
+              return {
+                title: `Galeria — ${count} ${noun}`,
+                subtitle: layout ?? "grid-2",
+                media: Array.isArray(images) ? images[0] : undefined,
+              };
+            },
+          },
+        },
       ],
     }),
   ],

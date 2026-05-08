@@ -1,6 +1,7 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { NavLink } from "@/components/nav-link";
+import { MobileMenu } from "@/components/mobile-menu";
 
 const NAV = [
   { href: "/", label: "Blog" },
@@ -24,6 +25,7 @@ export function SiteHeader() {
             ))}
           </ul>
           <ThemeToggle />
+          <MobileMenu items={NAV} />
         </nav>
       </div>
     </header>

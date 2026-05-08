@@ -36,6 +36,17 @@ export const POST_BY_SLUG_QUERY = groq`
           url,
           metadata { dimensions, lqip }
         }
+      },
+      _type == "gallery" => {
+        ...,
+        images[]{
+          ...,
+          asset->{
+            _id,
+            url,
+            metadata { dimensions, lqip }
+          }
+        }
       }
     }
   }

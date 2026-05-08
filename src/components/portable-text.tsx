@@ -5,8 +5,9 @@ import {
 } from "next-sanity";
 import Link from "next/link";
 import { urlForImage } from "@/sanity/lib/image";
-import type { SanityImage } from "@/sanity/lib/types";
+import type { GalleryBlockData, SanityImage } from "@/sanity/lib/types";
 import { LightboxImage } from "@/components/lightbox-image";
+import { GalleryBlock } from "@/components/gallery-block";
 
 const components: PortableTextComponents = {
   types: {
@@ -37,6 +38,10 @@ const components: PortableTextComponents = {
           ) : null}
         </figure>
       );
+    },
+    gallery: ({ value }: { value: GalleryBlockData }) => {
+      if (!value?.images?.length) return null;
+      return <GalleryBlock images={value.images} layout={value.layout} />;
     },
   },
   marks: {

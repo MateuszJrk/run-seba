@@ -184,19 +184,19 @@ export function PaceCalculator() {
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Twoje tempo
           </h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <ResultCard
-              label="min / km"
+              label="min/km"
               value={formatPace(paceKm)}
               hint="pace"
             />
             <ResultCard
-              label="min / mila"
+              label="min/mi"
               value={formatPace(paceMile)}
               hint="pace"
             />
             <ResultCard
-              label="km / h"
+              label="km/h"
               value={speed.toFixed(2)}
               hint="prędkość"
             />
@@ -286,11 +286,11 @@ function ResultCard({
   hint?: string;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
-      <p className="text-xs uppercase tracking-wider text-muted-foreground">
+    <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground sm:text-xs sm:tracking-wider">
         {label}
       </p>
-      <p className="mt-1 font-mono text-2xl font-semibold tabular-nums">
+      <p className="mt-1 font-mono text-xl font-semibold tabular-nums sm:text-2xl">
         {value}
       </p>
       {hint ? (

@@ -25,3 +25,12 @@ export type SanityPost = {
   cover?: SanityImage;
   body?: PortableTextBlock[];
 };
+
+export type GalleryLayout = "grid-2" | "grid-3" | "mosaic";
+
+export type GalleryBlockData = {
+  _type: "gallery";
+  _key: string;
+  images: Array<SanityImage & { caption?: string }>;
+  layout?: GalleryLayout;
+};
