@@ -30,6 +30,15 @@ Spotkanie z Sebą. Ten plik to punkt odniesienia, żeby nic nie przegapić. Po w
 - [ ] Wpisujemy `NEXT_PUBLIC_LIGHTWIDGET_ID` w Vercel envs (Production + Preview + Development)
 - [ ] Redeploy → na `/o-mnie` pojawia się sekcja "Z Instagrama @run_seba"
 
+### MapTiler (ładniejsze mapy w /biegi/[id]) — można dziś
+
+- [ ] Rejestracja: <https://cloud.maptiler.com/auth/widget> (free tier 100k req/m)
+- [ ] Skopiuj API key z <https://cloud.maptiler.com/account/keys/>
+- [ ] Dodaj `NEXT_PUBLIC_MAPTILER_KEY` w Vercel envs (Production + Preview + Development)
+- [ ] Redeploy → mapy w `/biegi/[id]` używają vector tiles streets-v2 zamiast OSM raster
+
+Bez tego klucza wszystko działa, tylko mapy są mniej "smooth".
+
 ### Strava (jeśli Seba ma konto i publikuje aktywności)
 
 **Pre-Seba (Mateusz):**
