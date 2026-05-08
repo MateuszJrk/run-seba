@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
+import { InstagramFeed } from "@/components/instagram-feed";
 import { PBGrid, type PB } from "@/components/pb-grid";
+
+const LIGHTWIDGET_ID = process.env.NEXT_PUBLIC_LIGHTWIDGET_ID ?? "";
 
 export const metadata: Metadata = {
   title: "O mnie",
@@ -105,6 +108,8 @@ export default function AboutPage() {
           Napisz do mnie
         </Link>
       </div>
+
+      {LIGHTWIDGET_ID ? <InstagramFeed widgetId={LIGHTWIDGET_ID} /> : null}
     </div>
   );
 }

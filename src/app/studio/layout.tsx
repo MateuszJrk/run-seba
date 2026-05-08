@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "Studio — run-seba.pl",
+  title: { absolute: "Sanity Studio — run-seba.pl" },
   robots: { index: false, follow: false },
 };
 
