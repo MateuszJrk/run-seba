@@ -126,6 +126,49 @@ function normalize(activity: StravaApiActivity): StravaActivity {
   };
 }
 
+export type YearStats = {
+  year: number;
+  totalDistanceM: number;
+  totalRuns: number;
+  totalMovingSec: number;
+  totalElevationM: number;
+  longestRunM: number;
+  avgPaceSecPerKm: number;
+  isMock: boolean;
+};
+
+export async function fetchYearStats(
+  year: number = new Date().getFullYear(),
+  limit = 200,
+): Promise<YearStats> {
+  const { activities, isMock } = await fetchRecentRuns(limit);
+  const yearRuns = activities.filter(
+    (a) => new Date(a.startDate).getFullYear() === year,
+  );
+
+  const totalDistanceM = yearRuns.reduce((s, a) => s + a.distance, 0);
+  const totalMovingSec = yearRuns.reduce((s, a) => s + a.movingTime, 0);
+  const totalElevationM = yearRuns.reduce(
+    (s, a) => s + a.totalElevationGain,
+    0,
+  );
+  const longestRunM =
+    yearRuns.length > 0 ? Math.max(...yearRuns.map((a) => a.distance)) : 0;
+  const avgPaceSecPerKm =
+    totalDistanceM > 0 ? totalMovingSec / (totalDistanceM / 1000) : 0;
+
+  return {
+    year,
+    totalDistanceM,
+    totalRuns: yearRuns.length,
+    totalMovingSec,
+    totalElevationM,
+    longestRunM,
+    avgPaceSecPerKm,
+    isMock,
+  };
+}
+
 export async function fetchRecentRuns(
   limit = 5,
 ): Promise<{ activities: StravaActivity[]; isMock: boolean }> {

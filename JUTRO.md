@@ -12,6 +12,13 @@ Spotkanie z Sebą. Ten plik to punkt odniesienia, żeby nic nie przegapić. Po w
       <https://www.sanity.io/manage/project/cr63utxk/members> → Invite member → email Seby → role: **Editor**
 - [ ] Seba akceptuje invite z maila + tworzy konto (Google/GitHub OAuth)
 - [ ] Wchodzi na <https://run-seba.pl/studio>, loguje się
+- [ ] Razem otwieramy w Sanity **Autor (Seba)** — singleton dokument:
+  - Wpisuje swoje **imię/ksywka**, rolę, klub, krótką bio
+  - Wrzuca **avatar** (zdjęcie)
+  - Edytuje **rekordy życiowe** (PB) — może dodać własne kategorie
+  - Dodaje **linki social** (IG, Strava, FB, YT, www)
+  - Pełna bio w **bio** (block content) — pokazuje się na /o-mnie
+  - Bez tego strona /o-mnie używa fallback hardcoded — działa, ale Seba nie edytuje sam
 - [ ] Razem tworzymy pierwszy "prawdziwy" post — pokazujemy mu:
   - jak dodać tytuł, slug, opis, datę, cover, tagi
   - jak pisać w block-content (nagłówki, listy, pogrubienie, linki)
@@ -29,6 +36,14 @@ Spotkanie z Sebą. Ten plik to punkt odniesienia, żeby nic nie przegapić. Po w
 - [ ] Kopiujemy widget ID (z embed code: `cdn.lightwidget.com/widgets/<ID>.html`)
 - [ ] Wpisujemy `NEXT_PUBLIC_LIGHTWIDGET_ID` w Vercel envs (Production + Preview + Development)
 - [ ] Redeploy → na `/o-mnie` pojawia się sekcja "Z Instagrama @run_seba"
+
+### Google Analytics 4
+
+- [ ] Wejdź na <https://analytics.google.com/>
+- [ ] Utwórz nowe property dla `run-seba.pl` (data stream: Web)
+- [ ] Skopiuj **Measurement ID** (format: `G-XXXXXXXXXX`)
+- [ ] Dodaj `NEXT_PUBLIC_GA_MEASUREMENT_ID` w Vercel envs (Production + Preview)
+- [ ] Redeploy — GA4 z Consent Mode default-deny (zgodne z GDPR bez bannera)
 
 ### MapTiler (ładniejsze mapy w /biegi/[id]) — można dziś
 

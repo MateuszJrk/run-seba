@@ -24,6 +24,14 @@ export default defineConfig({
                   .title("Wpisy")
                   .defaultOrdering([{ field: "date", direction: "desc" }]),
               ),
+            S.listItem()
+              .title("Autor (Seba)")
+              .child(
+                S.document()
+                  .schemaType("author")
+                  .documentId("seba")
+                  .title("Autor"),
+              ),
           ]),
     }),
     visionTool({ defaultApiVersion: apiVersion }),

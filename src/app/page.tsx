@@ -1,13 +1,19 @@
 import Link from "next/link";
 import { getAllPosts, getAllTags } from "@/lib/posts";
+import { fetchYearStats } from "@/lib/strava";
 import { PostsList } from "@/components/posts-list";
 import { Hero } from "@/components/hero";
 import { StravaFeed } from "@/components/strava-feed";
+import { YearStatsBlock } from "@/components/year-stats";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [posts, tags] = await Promise.all([getAllPosts(), getAllTags()]);
+  const [posts, tags, yearStats] = await Promise.all([
+    getAllPosts(),
+    getAllTags(),
+    fetchYearStats(),
+  ]);
 
   return (
     <>
@@ -42,6 +48,8 @@ export default async function HomePage() {
           </h2>
           <PostsList posts={posts} />
         </section>
+
+        <YearStatsBlock stats={yearStats} />
 
         <StravaFeed />
       </div>

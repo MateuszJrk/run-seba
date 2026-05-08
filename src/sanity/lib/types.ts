@@ -34,3 +34,34 @@ export type GalleryBlockData = {
   images: Array<SanityImage & { caption?: string }>;
   layout?: GalleryLayout;
 };
+
+export type AuthorPB = {
+  distance: string;
+  time: string;
+  year?: string;
+};
+
+export type AuthorLinkType =
+  | "instagram"
+  | "strava"
+  | "facebook"
+  | "youtube"
+  | "website";
+
+export type AuthorLink = {
+  label?: string;
+  type: AuthorLinkType;
+  url: string;
+};
+
+export type SanityAuthor = {
+  _id: string;
+  name: string;
+  role?: string;
+  klub?: string;
+  shortBio?: string;
+  bio?: PortableTextBlock[];
+  personalBests?: AuthorPB[];
+  links?: AuthorLink[];
+  avatar?: SanityImage;
+};

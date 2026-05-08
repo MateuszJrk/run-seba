@@ -1,11 +1,16 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts, getAllTags } from "@/lib/posts";
+import { fetchRecentRuns } from "@/lib/strava";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://run-seba.pl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, tags] = await Promise.all([getAllPosts(), getAllTags()]);
+  const [posts, tags, runs] = await Promise.all([
+    getAllPosts(),
+    getAllTags(),
+    fetchRecentRuns(20).then((r) => r.activities),
+  ]);
   const now = new Date();
 
   return [
@@ -22,6 +27,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tags.map(({ tag }) => ({
       url: `${SITE_URL}/tagi/${tag}`,
       lastModified: now,
+    })),
+    ...runs.map((run) => ({
+      url: `${SITE_URL}/biegi/${run.id}`,
+      lastModified: new Date(run.startDate),
+      changeFrequency: "monthly" as const,
     })),
   ];
 }

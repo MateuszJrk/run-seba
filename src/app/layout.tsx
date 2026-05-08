@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PageTransition } from "@/components/page-transition";
 import { SkipToContent } from "@/components/skip-to-content";
+import { GoogleAnalytics } from "@/components/google-analytics";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -68,8 +69,7 @@ export default function RootLayout({
             <PageTransition>{children}</PageTransition>
           </main>
           <SiteFooter />
-          <Analytics />
-          <SpeedInsights />
+          {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
         </ThemeProvider>
       </body>
     </html>

@@ -8,6 +8,10 @@ import { ElevationProfile } from "@/components/elevation-profile";
 import { SplitsTable } from "@/components/splits-table";
 import { StatCard } from "@/components/stat-card";
 import { WeatherWidget } from "@/components/weather-widget";
+import { ShareButtons } from "@/components/share-buttons";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://run-seba.pl";
 
 export const dynamicParams = true;
 export const revalidate = 1800; // 30 min
@@ -218,7 +222,12 @@ export default async function ActivityPage({
         <SplitsTable splits={activity.splits} />
       </section>
 
-      <footer className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6 text-sm">
+      <ShareButtons
+        url={`${SITE_URL}/biegi/${activity.id}`}
+        title={`${activity.name} — ${(activity.distance / 1000).toFixed(1)} km`}
+      />
+
+      <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6 text-sm">
         <Link
           href="/"
           className="text-muted-foreground transition-colors hover:text-foreground"

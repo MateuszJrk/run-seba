@@ -65,3 +65,24 @@ export const POSTS_BY_TAG_QUERY = groq`
     ${POST_FIELDS}
   }
 `;
+
+export const AUTHOR_QUERY = groq`
+  *[_type == "author" && _id == "seba"][0] {
+    _id,
+    name,
+    role,
+    klub,
+    shortBio,
+    bio,
+    personalBests,
+    links,
+    avatar {
+      ...,
+      asset->{
+        _id,
+        url,
+        metadata { dimensions, lqip }
+      }
+    }
+  }
+`;
