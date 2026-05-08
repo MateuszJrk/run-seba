@@ -15,6 +15,32 @@ export type StravaActivity = {
   url: string;
 };
 
+export type ElevationPoint = {
+  /** Distance from start in meters */
+  distance: number;
+  /** Altitude in meters above sea level */
+  altitude: number;
+};
+
+export type SplitKm = {
+  km: number; // 1, 2, 3...
+  paceSecPerKm: number;
+  elevationDelta: number; // meters gained/lost on this km
+  averageHr?: number;
+};
+
+export type StravaActivityFull = StravaActivity & {
+  averageHeartrate?: number;
+  maxHeartrate?: number;
+  averageCadence?: number;
+  calories?: number;
+  description?: string;
+  elevation: ElevationPoint[];
+  splits: SplitKm[];
+  kudosCount?: number;
+  prCount?: number;
+};
+
 type StravaApiActivity = {
   id: number;
   name: string;
@@ -130,6 +156,106 @@ export async function fetchRecentRuns(
   }
 }
 
+export async function fetchActivityById(
+  id: number | string,
+): Promise<{ activity: StravaActivityFull | null; isMock: boolean }> {
+  const numericId =
+    typeof id === "string" ? Number.parseInt(id, 10) : id;
+  if (Number.isNaN(numericId)) return { activity: null, isMock: true };
+
+  const token = await getAccessToken();
+  if (!token) {
+    const mock = getMockActivities(10).find((a) => a.id === numericId);
+    if (!mock) return { activity: null, isMock: true };
+    return { activity: enrichWithMockDetails(mock), isMock: true };
+  }
+
+  try {
+    const [activityRes, streamsRes] = await Promise.all([
+      fetch(
+        `https://www.strava.com/api/v3/activities/${numericId}?include_all_efforts=false`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          next: { revalidate: 1800 },
+        },
+      ),
+      fetch(
+        `https://www.strava.com/api/v3/activities/${numericId}/streams?keys=distance,altitude,heartrate&key_by_type=true`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          next: { revalidate: 1800 },
+        },
+      ),
+    ]);
+
+    if (!activityRes.ok) {
+      console.warn("Strava activity fetch failed:", activityRes.status);
+      return { activity: null, isMock: false };
+    }
+
+    const apiActivity = (await activityRes.json()) as StravaApiActivity & {
+      average_heartrate?: number;
+      max_heartrate?: number;
+      average_cadence?: number;
+      calories?: number;
+      description?: string;
+      kudos_count?: number;
+      pr_count?: number;
+      splits_metric?: Array<{
+        distance: number;
+        elapsed_time: number;
+        moving_time: number;
+        elevation_difference: number;
+        average_heartrate?: number;
+        split: number;
+      }>;
+    };
+
+    type Streams = {
+      distance?: { data: number[] };
+      altitude?: { data: number[] };
+      heartrate?: { data: number[] };
+    };
+    const streams: Streams = streamsRes.ok ? await streamsRes.json() : {};
+
+    const elevation: ElevationPoint[] =
+      streams.distance && streams.altitude
+        ? streams.distance.data.map((d, i) => ({
+            distance: d,
+            altitude: streams.altitude!.data[i],
+          }))
+        : [];
+
+    const splits: SplitKm[] =
+      apiActivity.splits_metric?.map((s) => ({
+        km: s.split,
+        paceSecPerKm: s.moving_time,
+        elevationDelta: s.elevation_difference,
+        averageHr: s.average_heartrate,
+      })) ?? [];
+
+    const base = normalize(apiActivity);
+    return {
+      activity: {
+        ...base,
+        averageHeartrate: apiActivity.average_heartrate,
+        maxHeartrate: apiActivity.max_heartrate,
+        averageCadence: apiActivity.average_cadence,
+        calories: apiActivity.calories,
+        description: apiActivity.description,
+        kudosCount: apiActivity.kudos_count,
+        prCount: apiActivity.pr_count,
+        elevation,
+        splits,
+      },
+      isMock: false,
+    };
+  } catch (error) {
+    console.warn("Strava activity fetch error:", error);
+    return { activity: null, isMock: false };
+  }
+}
+
 // ---------- Mock data ----------
 // Encoded polylines z prawdziwych okolic (kawałek tras w Polsce),
 // żeby kształty wyglądały realistycznie. Wymieniamy na real po OAuth.
@@ -139,6 +265,68 @@ const MOCK_POLYLINES = [
   "ehruHcdqaC_aBnh@_aB`o@_aB`r@",
   "uxxgIa~i{B}qBfrAmlBsvAelB_zA",
 ];
+
+function generateMockElevation(
+  totalDistance: number,
+  baseAltitude: number,
+  totalGain: number,
+): ElevationPoint[] {
+  // Generuje rozsądny profil: 100 punktów, sinusoidalna fala + drobne oscylacje
+  const points: ElevationPoint[] = [];
+  const samples = 100;
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples;
+    const distance = t * totalDistance;
+    // Główna fala: 2 wzgórza
+    const wave = Math.sin(t * Math.PI * 2.2) * 0.6 + Math.sin(t * Math.PI * 5) * 0.2;
+    // Lekki tilt do góry (gain over distance)
+    const trend = t * 0.4;
+    const altitude = baseAltitude + (wave + trend) * (totalGain / 1.4);
+    points.push({ distance, altitude });
+  }
+  return points;
+}
+
+function generateMockSplits(
+  distanceM: number,
+  totalSec: number,
+): SplitKm[] {
+  const km = Math.floor(distanceM / 1000);
+  const baseSec = totalSec / (distanceM / 1000);
+  const splits: SplitKm[] = [];
+  for (let i = 1; i <= km; i++) {
+    // Drobna wariacja ±5%, lekki negative split (drugie połowa szybsza)
+    const progressBoost = i > km / 2 ? -baseSec * 0.02 : baseSec * 0.01;
+    const noise = (Math.sin(i * 1.7) + Math.cos(i * 0.9)) * baseSec * 0.025;
+    splits.push({
+      km: i,
+      paceSecPerKm: Math.round(baseSec + progressBoost + noise),
+      elevationDelta: Math.round((Math.sin(i * 0.7) + Math.cos(i * 0.4)) * 8),
+      averageHr: Math.round(155 + Math.sin(i * 0.5) * 8),
+    });
+  }
+  return splits;
+}
+
+function enrichWithMockDetails(base: StravaActivity): StravaActivityFull {
+  return {
+    ...base,
+    averageHeartrate: 158,
+    maxHeartrate: 178,
+    averageCadence: 88,
+    calories: Math.round(base.distance * 0.07),
+    description:
+      "Świetna trasa, idealne warunki. Ten odcinek na 9 km kilometrze był najtrudniejszy — pod górkę, ale dało radę.",
+    kudosCount: 24,
+    prCount: 1,
+    elevation: generateMockElevation(
+      base.distance,
+      180,
+      base.totalElevationGain,
+    ),
+    splits: generateMockSplits(base.distance, base.movingTime),
+  };
+}
 
 function getMockActivities(limit: number): StravaActivity[] {
   const now = Date.now();

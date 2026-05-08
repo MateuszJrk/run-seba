@@ -110,9 +110,7 @@ export async function StravaFeed() {
         {activities.map((a) => (
           <li key={a.id}>
             <Link
-              href={a.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/biegi/${a.id}`}
               className="group block overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-running/40"
             >
               <div className="aspect-[5/3] bg-running-soft p-3">
