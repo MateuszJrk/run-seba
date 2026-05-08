@@ -90,7 +90,7 @@ export default async function ActivityPage({
           {activity.name}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          <time dateTime={activity.startDate}>
+          <time dateTime={activity.startDate} suppressHydrationWarning>
             {DATE_FORMATTER.format(new Date(activity.startDate))}
           </time>
         </p>

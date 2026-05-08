@@ -37,7 +37,7 @@ export function PostCard({ post }: { post: PostMeta }) {
         <Link href={`/blog/${post.slug}`} className="block">
           <header className="space-y-2">
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <time dateTime={post.date}>
+              <time dateTime={post.date} suppressHydrationWarning>
                 {DATE_FORMATTER.format(new Date(post.date))}
               </time>
               <span aria-hidden>·</span>

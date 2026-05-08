@@ -35,7 +35,10 @@ export function RelatedPosts({ posts }: { posts: PostMeta[] }) {
                 </div>
               ) : null}
               <div className="p-4">
-                <p className="text-xs text-muted-foreground">
+                <p
+                  className="text-xs text-muted-foreground"
+                  suppressHydrationWarning
+                >
                   {DATE_FORMATTER.format(new Date(post.date))}
                 </p>
                 <h3 className="mt-1 text-base font-semibold tracking-tight">

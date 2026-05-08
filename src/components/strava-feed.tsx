@@ -118,7 +118,7 @@ export async function StravaFeed() {
               </div>
               <div className="space-y-2 p-4">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <time dateTime={a.startDate}>
+                  <time dateTime={a.startDate} suppressHydrationWarning>
                     {DATE_FORMATTER.format(new Date(a.startDate))}
                   </time>
                   <span aria-hidden>·</span>

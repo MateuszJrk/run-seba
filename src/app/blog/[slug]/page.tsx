@@ -86,7 +86,7 @@ export default async function PostPage({
 
       <header className="mb-10 border-b border-border pb-8">
         <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <time dateTime={post.date}>
+          <time dateTime={post.date} suppressHydrationWarning>
             {DATE_FORMATTER.format(new Date(post.date))}
           </time>
           <span aria-hidden>·</span>
