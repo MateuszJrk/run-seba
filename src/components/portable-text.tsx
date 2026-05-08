@@ -8,6 +8,7 @@ import { urlForImage } from "@/sanity/lib/image";
 import type { GalleryBlockData, SanityImage } from "@/sanity/lib/types";
 import { LightboxImage } from "@/components/lightbox-image";
 import { GalleryBlock } from "@/components/gallery-block";
+import { EmbedBlock } from "@/components/embed-block";
 
 const components: PortableTextComponents = {
   types: {
@@ -42,6 +43,10 @@ const components: PortableTextComponents = {
     gallery: ({ value }: { value: GalleryBlockData }) => {
       if (!value?.images?.length) return null;
       return <GalleryBlock images={value.images} layout={value.layout} />;
+    },
+    embed: ({ value }: { value: { url: string; caption?: string } }) => {
+      if (!value?.url) return null;
+      return <EmbedBlock url={value.url} caption={value.caption} />;
     },
   },
   marks: {

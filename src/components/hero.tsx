@@ -86,6 +86,40 @@ export function Hero() {
           .
         </motion.p>
       </motion.div>
+
+      <motion.div
+        style={{ opacity }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
+        className="absolute inset-x-0 bottom-6 z-10 mx-auto flex justify-center"
+        aria-hidden
+      >
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{
+            duration: 1.8,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+          className="flex flex-col items-center gap-1.5 text-foreground/70"
+        >
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em]">
+            Scroll
+          </span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="size-4"
+          >
+            <path d="M6 9 L12 15 L18 9" />
+          </svg>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

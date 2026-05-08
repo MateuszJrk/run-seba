@@ -102,6 +102,38 @@ export const postType = defineType({
         },
         {
           type: "object",
+          name: "embed",
+          title: "Embed (YouTube / Strava / Vimeo)",
+          fields: [
+            defineField({
+              name: "url",
+              title: "URL",
+              type: "url",
+              description:
+                "Wklej link do filmu YouTube, aktywności Strava lub filmu Vimeo. System sam rozpozna typ.",
+              validation: (rule) =>
+                rule
+                  .required()
+                  .uri({ scheme: ["http", "https"] }),
+            }),
+            defineField({
+              name: "caption",
+              title: "Podpis (opcjonalnie)",
+              type: "string",
+            }),
+          ],
+          preview: {
+            select: { url: "url", caption: "caption" },
+            prepare({ url, caption }) {
+              return {
+                title: caption ?? "Embed",
+                subtitle: url ?? "(brak URL)",
+              };
+            },
+          },
+        },
+        {
+          type: "object",
           name: "gallery",
           title: "Galeria zdjęć",
           fields: [

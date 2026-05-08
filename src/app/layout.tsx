@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PageTransition } from "@/components/page-transition";
+import { SkipToContent } from "@/components/skip-to-content";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -56,11 +59,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SkipToContent />
           <SiteHeader />
-          <main className="flex-1">
+          <main id="main" className="flex-1">
             <PageTransition>{children}</PageTransition>
           </main>
           <SiteFooter />
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
