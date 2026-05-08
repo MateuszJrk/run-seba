@@ -40,10 +40,15 @@ Spotkanie z Sebą. Ten plik to punkt odniesienia, żeby nic nie przegapić. Po w
 ### Google Analytics 4
 
 - [ ] Wejdź na <https://analytics.google.com/>
-- [ ] Utwórz nowe property dla `run-seba.pl` (data stream: Web)
-- [ ] Skopiuj **Measurement ID** (format: `G-XXXXXXXXXX`)
-- [ ] Dodaj `NEXT_PUBLIC_GA_MEASUREMENT_ID` w Vercel envs (Production + Preview)
+- [ ] **+ Utwórz → Konto** (np. "Mateusz blogs"), w nim **Usługa** `run-seba.pl`
+- [ ] **Strumień Web** → adres `https://run-seba.pl`
+- [ ] Skopiuj **Identyfikator pomiaru** (format: `G-XXXXXXXXXX`)
+- [ ] Dodaj `NEXT_PUBLIC_GA_MEASUREMENT_ID` w Vercel envs (Production + Preview + Development)
 - [ ] Redeploy — GA4 z Consent Mode default-deny (zgodne z GDPR bez bannera)
+- [ ] **Udostępnij Sebie:**
+  - Administracja → Zarządzanie dostępem do usługi → **+** → email Seby → rola **Czytelnik**
+  - Tylko poziom property (nie całe konto), żeby nie widział innych Twoich projektów
+- [ ] Vercel panel **NIE** udostępniaj (Hobby plan = tylko 1 member, Pro $20/mc — niepotrzebne, Seba dostaje wszystko ważne w GA)
 
 ### MapTiler (ładniejsze mapy w /biegi/[id]) — można dziś
 
