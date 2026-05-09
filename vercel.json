@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/revalidate-strava",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}

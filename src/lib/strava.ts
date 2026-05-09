@@ -63,6 +63,17 @@ const RUN_SPORT_TYPES = new Set([
   "VirtualRun",
 ]);
 
+// Cache strategy:
+// - Activities list: 1 day (revalidacja przez cron lub ręczny tag)
+// - Per-activity szczegóły + streams: 7 dni (historia immutable po publikacji)
+// - Wszystkie fetches taggowane "strava" → jeden revalidateTag czyści cache.
+// - per_page ujednolicony do PER_PAGE → ten sam URL = ten sam klucz cache
+//   niezależnie od tego czy strona prosi o 5, 20 czy 200 ostatnich biegów.
+const STRAVA_LIST_REVALIDATE_SEC = 86_400;
+const STRAVA_ACTIVITY_REVALIDATE_SEC = 7 * 86_400;
+const STRAVA_TAG = "strava";
+const PER_PAGE = 100;
+
 let cachedAccessToken: { token: string; expiresAt: number } | null = null;
 
 async function getAccessToken(): Promise<string | null> {
@@ -178,9 +189,9 @@ export async function fetchRecentRuns(
   }
 
   try {
-    const res = await fetch(`${ACTIVITIES_URL}?per_page=${limit * 2}`, {
+    const res = await fetch(`${ACTIVITIES_URL}?per_page=${PER_PAGE}`, {
       headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 1800 }, // 30 min cache
+      next: { revalidate: STRAVA_LIST_REVALIDATE_SEC, tags: [STRAVA_TAG] },
     });
 
     if (!res.ok) {
@@ -216,19 +227,26 @@ export async function fetchActivityById(
   }
 
   try {
+    const activityTag = `strava:activity:${numericId}`;
     const [activityRes, streamsRes] = await Promise.all([
       fetch(
         `https://www.strava.com/api/v3/activities/${numericId}?include_all_efforts=false`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          next: { revalidate: 1800 },
+          next: {
+            revalidate: STRAVA_ACTIVITY_REVALIDATE_SEC,
+            tags: [STRAVA_TAG, activityTag],
+          },
         },
       ),
       fetch(
         `https://www.strava.com/api/v3/activities/${numericId}/streams?keys=distance,altitude,heartrate,velocity_smooth&key_by_type=true`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          next: { revalidate: 1800 },
+          next: {
+            revalidate: STRAVA_ACTIVITY_REVALIDATE_SEC,
+            tags: [STRAVA_TAG, activityTag],
+          },
         },
       ),
     ]);
