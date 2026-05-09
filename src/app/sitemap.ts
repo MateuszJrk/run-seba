@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, tags, runs, totalBlogPages] = await Promise.all([
     getAllPosts(),
     getAllTags(),
-    fetchRecentRuns(20).then((r) => r.activities),
+    fetchRecentRuns(100).then((r) => r.activities),
     getTotalPostsPages(),
   ]);
   const now = new Date();
@@ -29,6 +29,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
+  const totalRunPages = Math.max(1, Math.ceil(runs.length / 20));
+  const runPages: MetadataRoute.Sitemap = [
+    { url: `${SITE_URL}/biegi`, lastModified: now, changeFrequency: "weekly" },
+  ];
+  for (let i = 2; i <= totalRunPages; i++) {
+    runPages.push({
+      url: `${SITE_URL}/biegi/page/${i}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+    });
+  }
+
   return [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/o-mnie`, lastModified: now },
@@ -36,6 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/kalkulator`, lastModified: now },
     { url: `${SITE_URL}/tagi`, lastModified: now },
     ...blogPages,
+    ...runPages,
     ...posts.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
       lastModified: new Date(post.date),
