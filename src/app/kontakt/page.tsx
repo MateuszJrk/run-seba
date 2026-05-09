@@ -33,13 +33,13 @@ export default function ContactPage() {
         </li>
         <li>
           <a
-            href="mailto:hej@run-seba.pl"
+            href="mailto:s.knapikk@gmail.com"
             className="flex items-center gap-3 rounded-xl border border-border bg-card p-5 transition-colors hover:border-foreground/20"
           >
             <Mail className="size-6" />
             <div>
               <p className="font-medium">Email</p>
-              <p className="text-sm text-muted-foreground">hej@run-seba.pl</p>
+              <p className="text-sm text-muted-foreground">s.knapikk@gmail.com</p>
             </div>
           </a>
         </li>
