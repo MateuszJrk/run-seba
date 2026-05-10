@@ -118,20 +118,28 @@ Bez tego klucza wszystko działa, tylko mapy są mniej "smooth".
 ### Sprzęt i pomiary
 
 - [ ] Z jakiego **zegarka** korzystasz? (Garmin XYZ? Coros? Apple Watch? Polar?)
+garmin 965
 - [ ] Czy synchronizujesz aktywności **z Stravą** automatycznie?
+tak
 - [ ] Czy **publikujesz aktywności publicznie** na Stravie (visibility = Everyone)?
+
 - [ ] Jakich **butów** używasz w rotacji? (modele, ile km, co recenzowałbyś)
+
 - [ ] Inne ulubione marki/sprzęt: czołówka, kompresory, GPS pulsometr, plecak hydration?
+aplikacjia roovy, trenażer Elite Suito, 
 
 ### Treningi i plany
 
 - [ ] Z jakiego **planu treningowego** korzystasz? (Daniels' Running Formula? Pfitzinger? Hanson? Własny?)
+https://ratemytrail.com/
 - [ ] Z jakich **aplikacji** korzystasz na co dzień? (Garmin Coach? TrainingPeaks? Final Surge?)
+
 - [ ] **Cele na 2026/2027**: jakie starty? Jaki jest plan na maraton?
 
 ### Trasy
 
 - [ ] Czy masz **ulubione trasy** które chciałbyś pokazać na blogu jako "curated"?
+
 - [ ] Czy masz **GPX-y** wyeksportowane z Garmin Connect / Strava?
 - [ ] Region biegowy: gdzie najczęściej trenujesz? (las / miasto / góry)
 
