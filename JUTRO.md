@@ -186,7 +186,7 @@ Pokazać blog na pełnej okazałości:
   - Block-content: nagłówki, listy, pogrubienie, linki, galeria, embed
 - [ ] **Vercel dashboard** — krótki przegląd (deployments, analytics, logs) — TYLKO Twój ekran
 - [ ] **GA Realtime** — w Twojej zakładce GA pokazać że ruch jest mierzony
-
+test push
 ---
 
 ## 🛠️ Decyzje do podjęcia razem
