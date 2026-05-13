@@ -64,12 +64,14 @@ const RUN_SPORT_TYPES = new Set([
 ]);
 
 // Cache strategy:
-// - Activities list: 1 day (revalidacja przez cron lub ręczny tag)
+// - Activities list: 15 min — świeży bieg pojawia się max 15 min po uploadzie.
+//   ~96 wywołań Stravy/dobę, dużo poniżej limitu 1000/dobę.
 // - Per-activity szczegóły + streams: 7 dni (historia immutable po publikacji)
-// - Wszystkie fetches taggowane "strava" → jeden revalidateTag czyści cache.
+// - Wszystkie fetches taggowane "strava" → ręczny revalidateTag czyści cache
+//   (endpoint /api/revalidate-strava nadal działa do ręcznego flush).
 // - per_page ujednolicony do PER_PAGE → ten sam URL = ten sam klucz cache
 //   niezależnie od tego czy strona prosi o 5, 20 czy 200 ostatnich biegów.
-const STRAVA_LIST_REVALIDATE_SEC = 86_400;
+const STRAVA_LIST_REVALIDATE_SEC = 900;
 const STRAVA_ACTIVITY_REVALIDATE_SEC = 7 * 86_400;
 const STRAVA_TAG = "strava";
 const PER_PAGE = 100;
@@ -87,6 +89,9 @@ async function getAccessToken(): Promise<string | null> {
     return cachedAccessToken.token;
   }
 
+  // Bez `cache: "no-store"` — Next traktuje to jako sygnał dynamic-render,
+  // co kładzie ISR na home page (DYNAMIC_SERVER_USAGE). POST i tak nie jest
+  // cache'owany przez Next, więc każde wywołanie i tak trafia do Stravy.
   const res = await fetch(TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -96,7 +101,6 @@ async function getAccessToken(): Promise<string | null> {
       refresh_token: refreshToken,
       grant_type: "refresh_token",
     }),
-    cache: "no-store",
   });
 
   if (!res.ok) {
